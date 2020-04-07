@@ -227,9 +227,9 @@ server <- function(input, output){
                  aes_string(xparam , input$parameter , #shape="Measures",
                             group= "Country_Region", color = "Country_Region" )
       ) 
-    if(xparam != "Date"){ p <- p + scale_x_continuous(breaks = scales::breaks_pretty(10))
+    if(xparam != "Date"){ p <- p + scale_x_continuous(breaks = scales::pretty_breaks(10))
     }else{
-      p <- p + scale_x_date(breaks = scales::breaks_pretty(10)) + 
+      p <- p + scale_x_date(breaks = scales::pretty_breaks(10)) + 
         theme(axis.text.x = element_text(angle = 90))
     }
     p
