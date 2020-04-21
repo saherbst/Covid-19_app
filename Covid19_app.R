@@ -256,7 +256,7 @@ server <- function(input, output){
         aes_string(x = xparam, y = input$parameter, label="Country_Region", 
                    color= "Country_Region" ), size=2.5
       ) +
-      geom_smooth(se = FALSE, span=0.4, alpha=0.7, size=0.5  ) +
+      geom_smooth(se = FALSE, span=0.3, alpha=0.7, size=0.5  ) +
       scale_y_cov +
       theme_bw() + 
       scale_x_continuous()
