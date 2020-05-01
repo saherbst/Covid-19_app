@@ -120,7 +120,7 @@ ui <- fluidPage(
                   "Number of cases:",
                   min = 1,
                   max = max(Covid19_by_country$cases_per_country),
-                  value = c(2000,
+                  value = c(25000,
                             max(Covid19_by_country$cases_per_country))),
       checkboxInput("sel_country", label = "Only selected countries", value = FALSE),
       selectInput('countries', 'Countries', unique(Covid19_by_country$Country_Region), 
