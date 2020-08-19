@@ -114,7 +114,7 @@ ui <- fluidPage(
       selectInput("time_scale", label = "Relativ time scale since outbreak", 
                   choices = c("Days_since_100th_case", "Date", "Days_since_third_death",
                               "Days_since_schoolclosures"), 
-                  selected = "Days_since_100th_case" ),
+                  selected = "Date" ),
       checkboxInput("scale", label = "log10", value = FALSE),
       sliderInput("minNrcases",
                   "Number of cases:",
@@ -229,7 +229,7 @@ server <- function(input, output){
       ) 
     if(xparam != "Date"){ p <- p + scale_x_continuous(breaks = scales::pretty_breaks(10))
     }else{
-      p <- p + scale_x_date(breaks = scales::pretty_breaks(10)) + 
+      p <- p + scale_x_date(breaks = scales::pretty_breaks(20)) + 
         theme(axis.text.x = element_text(angle = 90))
     }
     p
@@ -258,8 +258,14 @@ server <- function(input, output){
       ) +
       geom_smooth(se = FALSE, span=0.3, alpha=0.7, size=0.5  ) +
       scale_y_cov +
-      theme_bw() + 
-      scale_x_continuous()
+      theme_bw() 
+    
+    if(xparam != "Date"){ p <- p + scale_x_continuous(breaks = scales::pretty_breaks(10))
+    }else{
+      p <- p + scale_x_date(breaks = scales::pretty_breaks(20)) + 
+        theme(axis.text.x = element_text(angle = 90))
+    }
+    
     p
     
   })
