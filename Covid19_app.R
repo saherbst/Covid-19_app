@@ -19,6 +19,8 @@ Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData
 Time_series_deaths_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", delim = ",")
 School_closures <- read_delim("https://en.unesco.org/sites/default/files/covid_impact_education.csv", delim= ",")
 
+tbl_incl_test_nrs <- read_delim("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv", delim = ",")
+
 Covid19_confirmed <- 
   Time_series_orig %>%
   gather("Date", "Confirmed_cases", `1/22/20`:colnames(Time_series_orig)[length(Time_series_orig)]) %>%
