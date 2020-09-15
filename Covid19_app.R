@@ -11,6 +11,7 @@
 library(shiny)
 library(tidyverse)
 library(plotly)
+library(countrycode)
 select <- dplyr::select
 
 #Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv", delim = ",")
@@ -69,7 +70,8 @@ Covid19_by_country <- Covid19_by_country %>%
          deaths_per_day_country = deaths_per_country - lag(deaths_per_country, order_by = Date)) %>%
   ungroup()
 
-School_closures <- School_closures %>% filter(Scale == "National") %>%
+School_closures <- School_closures %>% 
+  filter(Status == "Closed due to COVID-19") %>%
   mutate(Date = as.Date(Date, format="%d/%m/%y")) %>%
   group_by(Country) %>%
   arrange(Date) %>%
@@ -99,6 +101,7 @@ Date_school_closures <- Covid19_by_country %>% filter(Measures == "School closur
 
 Covid19_by_country <- left_join(Covid19_by_country , Date_school_closures) %>%
   mutate(Days_since_schoolclosures = difftime( Date, date_school_closure, units = "days"))
+
 ###### UI
 ui <- fluidPage(
   
@@ -124,6 +127,11 @@ ui <- fluidPage(
                   max = max(Covid19_by_country$cases_per_country),
                   value = c(25000,
                             max(Covid19_by_country$cases_per_country))),
+      selectInput("continent", 
+                  label = "continent", 
+                  choices = c("all", "Africa", "Americas", "Asia", "Europe",
+                              "Oceania"), 
+                  selected = "all" ),
       checkboxInput("sel_country", label = "Only selected countries", value = FALSE),
       selectInput('countries', 'Countries', unique(Covid19_by_country$Country_Region), 
                   multiple=TRUE, selectize=TRUE, selected = "Germany")
@@ -146,6 +154,14 @@ server <- function(input, output){
       dplyr::summarise(cases_per_country = sum(Confirmed_cases)) %>%
       filter(cases_per_country <= input$minNrcases[2] & 
                cases_per_country >= input$minNrcases[1] ) %>% .$`Country/Region`
+    
+    if(input$continent!="all"){
+      # Add continent to data frame
+      continent <- countrycode(sourcevar = countries_with_min_cases,
+                                                  origin = "country.name",
+                                                  destination = "continent")
+      countries_with_min_cases <- countries_with_min_cases[continent == input$continent]
+    }
     
     if(input$sel_country==TRUE){
       countries_with_min_cases <- input$countries
