@@ -12,6 +12,7 @@ library(shiny)
 library(tidyverse)
 library(plotly)
 library(countrycode)
+library(gapminder)
 select <- dplyr::select
 
 #Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv", delim = ",")
@@ -21,6 +22,7 @@ Time_series_deaths_orig <- read_delim("https://raw.githubusercontent.com/CSSEGIS
 School_closures <- read_delim("https://en.unesco.org/sites/default/files/covid_impact_education.csv", delim= ",")
 
 tbl_incl_test_nrs <- read_delim("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv", delim = ",")
+# TODO create a parameter which plots cases per tested people
 
 Covid19_confirmed <- 
   Time_series_orig %>%
@@ -102,6 +104,12 @@ Date_school_closures <- Covid19_by_country %>% filter(Measures == "School closur
 Covid19_by_country <- left_join(Covid19_by_country , Date_school_closures) %>%
   mutate(Days_since_schoolclosures = difftime( Date, date_school_closure, units = "days"))
 
+Covid19_by_country <- left_join(Covid19_by_country,
+          (gapminder %>%
+            filter(year == "2007") %>%
+             mutate(Country_Region=if_else(country == "United States", "US", as.character( country)) ) %>%
+            select(Country_Region, pop)) ) 
+
 ###### UI
 ui <- fluidPage(
   
@@ -121,6 +129,7 @@ ui <- fluidPage(
                               "Days_since_schoolclosures"), 
                   selected = "Date" ),
       checkboxInput("scale", label = "log10", value = FALSE),
+      checkboxInput("per100000", label = "Per 100 000 people", value = FALSE),
       sliderInput("minNrcases",
                   "Number of cases:",
                   min = 1,
@@ -186,6 +195,10 @@ server <- function(input, output){
         filter(Country_Region %in% countries_with_min_cases ,
                Days_since_schoolclosures >=0)
       xparam = "Days_since_schoolclosures"
+    }
+    
+    if(input$per100000){
+      df_cov[,input$parameter] <- df_cov[,input$parameter]/ df_cov[,"pop"] *100000
     }
     
     ymax_cov <- max( df_cov[as.vector(df_cov[,input$parameter] != "Inf"),input$parameter]  
