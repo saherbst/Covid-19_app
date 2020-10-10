@@ -15,15 +15,12 @@ library(countrycode)
 library(gapminder)
 select <- dplyr::select
 
-#Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv", delim = ",")
+### Read data
 Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", delim = ",")
-#Time_series_deaths_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", delim = ",")
 Time_series_deaths_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", delim = ",")
 School_closures <- read_delim("https://en.unesco.org/sites/default/files/covid_impact_education.csv", delim= ",")
 
-tbl_incl_test_nrs <- read_delim("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv", delim = ",")
-# TODO create a parameter which plots cases per tested people
-
+### Format data
 Covid19_confirmed <- 
   Time_series_orig %>%
   gather("Date", "Confirmed_cases", `1/22/20`:colnames(Time_series_orig)[length(Time_series_orig)]) %>%
@@ -42,7 +39,6 @@ Covid19_by_country <- Covid19 %>%
   ungroup() %>%
   filter(cases_per_country != 0) %>%
   mutate(percentage_deaths_per_confirmed_cases= deaths_per_country/cases_per_country*100 )
-
 
 StartDate <- Covid19_by_country %>%
   filter(cases_per_country > 100) %>%
@@ -227,7 +223,7 @@ server <- function(input, output){
     combo
   })
   
-  ########
+  ######## Functions for plotting
   
   cov_lineplot <- reactive({
     combo <- settings()
