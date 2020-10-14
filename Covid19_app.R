@@ -104,6 +104,7 @@ Covid19_by_country <- left_join(Covid19_by_country,
           (gapminder %>%
             filter(year == "2007") %>%
              mutate(Country_Region=if_else(country == "United States", "US", as.character( country)) ) %>%
+             mutate(Country_Region=if_else(country == "Czech Republic", "Czechia" , as.character( country)) ) %>%
             select(Country_Region, pop)) ) 
 
 ###### UI
