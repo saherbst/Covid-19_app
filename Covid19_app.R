@@ -24,14 +24,19 @@ School_closures <- read_delim("https://en.unesco.org/sites/default/files/covid_i
 Covid19_confirmed <- 
   Time_series_orig %>%
   gather("Date", "Confirmed_cases", `1/22/20`:colnames(Time_series_orig)[length(Time_series_orig)]) %>%
-  mutate(Date = as.Date(Date, format="%m/%d/%y"))
+  mutate(Date = as.Date(Date, format="%m/%d/%y")) %>%
+  group_by(`Country/Region`, Date) %>%
+  summarise(Confirmed_cases = sum(Confirmed_cases) )
 
 Covid19_deaths <- 
   Time_series_deaths_orig %>% 
   gather("Date", "Deaths", `1/22/20`:colnames(Time_series_orig)[length(Time_series_orig)]) %>%
-  mutate(Date = as.Date(Date, format="%m/%d/%y"))
+  mutate(Date = as.Date(Date, format="%m/%d/%y")) %>%
+  group_by(`Country/Region`, Date) %>%
+  summarise(Deaths = sum(Deaths) )
 
-Covid19 <- left_join(Covid19_confirmed, Covid19_deaths) 
+Covid19 <- left_join(Covid19_confirmed, 
+                     Covid19_deaths) 
 
 Covid19_by_country <- Covid19 %>%
   group_by("Country_Region"= `Country/Region`, Date) %>%
