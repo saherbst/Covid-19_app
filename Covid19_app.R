@@ -125,7 +125,7 @@ ui <- fluidPage(
                   label = "parameter", 
                   choices = c("cases_per_country", "percentage_deaths_per_confirmed_cases", "deaths_per_country",
                               "cases_per_day_country", "deaths_per_day_country"), 
-                  selected = "cases_per_country" ),
+                  selected = "cases_per_day_country" ),
       selectInput("time_scale", label = "Relativ time scale since outbreak", 
                   choices = c("Days_since_100th_case", "Date", "Days_since_third_death",
                               "Days_since_schoolclosures"), 
