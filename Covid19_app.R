@@ -13,6 +13,7 @@ library(tidyverse)
 library(plotly)
 library(countrycode)
 library(gapminder)
+library(zoo)
 select <- dplyr::select
 
 ### Read data
@@ -226,7 +227,7 @@ server <- function(input, output){
                   scale_y_cov = scale_y_cov,
                   ymin_cov = ymin_cov
     )
-    combo
+    #combo
   })
   
   ######## Functions for plotting
@@ -269,7 +270,7 @@ server <- function(input, output){
     
   })
   
-  cov_barplot <- reactive({
+  cov_rollmean <- reactive({
     combo <- settings()
     countries_with_min_cases <- combo$countries_with_min_cases
     df_cov = combo$df_cov
@@ -278,8 +279,16 @@ server <- function(input, output){
     scale_y_cov = combo$scale_y_cov
     ymin_cov = combo$ymin_cov
     
+    df_cov <- 
+      df_cov %>% 
+      select(xparam, input$parameter, Country_Region, Date) %>%
+      group_by(Country_Region) %>%
+      arrange(.data[[xparam]]) %>%
+      mutate( new_variable = rollmean(.data[[input$parameter]], 7, fill = NA) ) %>%
+      ungroup
+    
     p <- df_cov %>%
-      ggplot(aes_string(xparam , input$parameter , group= "Country_Region", 
+      ggplot(aes_string(xparam , "new_variable" , group= "Country_Region", 
                         color = "Country_Region" )) +
       geom_text(
         data = df_cov %>% group_by(Country_Region) %>% 
@@ -289,7 +298,8 @@ server <- function(input, output){
         aes_string(x = xparam, y = input$parameter, label="Country_Region", 
                    color= "Country_Region" ), size=2.5
       ) +
-      geom_smooth(se = FALSE, span=0.3, alpha=0.7, size=0.5  ) +
+      ylab(input$parameter) +
+      geom_line( alpha=0.7) +
       scale_y_cov +
       theme_bw() 
     
@@ -305,7 +315,8 @@ server <- function(input, output){
   
   type_of_plot <- reactive({
     if(input$parameter %in% c("deaths_per_day_country", "cases_per_day_country")){
-      p <- cov_barplot()
+      p <- cov_rollmean()
+      #p <- cov_lineplot()
     }else{
       p <- cov_lineplot()
     }
