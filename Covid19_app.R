@@ -19,7 +19,7 @@ select <- dplyr::select
 ### Read data
 Time_series_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv", delim = ",")
 Time_series_deaths_orig <- read_delim("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", delim = ",")
-School_closures <- read_delim("https://en.unesco.org/sites/default/files/covid_impact_education.csv", delim= ",")
+School_closures <- read_delim("https://webarchive.unesco.org/web/20220629024039/https://en.unesco.org/sites/default/files/covid_impact_education_full.csv", delim= ",")
 
 ### Format data
 Covid19_confirmed <- 
